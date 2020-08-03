@@ -122,3 +122,4 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN}}
           files: 'dist/*'
+          release-tag: ${{ github.ref }}
