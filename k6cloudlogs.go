@@ -112,19 +112,12 @@ func (m *msg) Log(logger logrus.FieldLogger) {
 		for _, value := range stream.Values {
 			nsec, _ := strconv.Atoi(value[0])
 			e := logger.WithFields(fields).WithTime(time.Unix(0, int64(nsec)))
-
-			switch level {
-			case "info":
-				e.Info(value[1])
-			case "error":
-				e.Error(value[1])
-			case "warning":
-				e.Warn(value[1])
-			case "debug":
-				e.Debug(value[1])
-			default:
+			lvl, err := logrus.ParseLevel(level)
+			if err != nil {
 				e.Info(value[1])
 				e.Warn("last message had unknown level " + level)
+			} else {
+				e.Log(lvl, value[1])
 			}
 		}
 	}
@@ -152,7 +145,7 @@ func parseFilters(id, level string) ([]string, error) {
 
 func main() {
 	var (
-		addr  = flag.String("addr", "wss://cloudlogs.k6.io/api/v1/tail", "loki addres and path")
+		addr  = flag.String("addr", "wss://cloudlogs.k6.io/api/v1/tail", "loki address and path")
 		id    = flag.String("id", "1232", "test run id")
 		token = flag.String("token", "1232", "the token")
 		level = flag.String("level", "info", "the info")
