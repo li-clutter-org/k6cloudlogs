@@ -147,7 +147,7 @@ func parseFilters(id, level string) ([]string, error) {
 
 func main() {
 	var (
-		addr  = flag.String("addr", "wss://loki-proxy.staging.loadimpact.com/api/v1/tail", "loki addres and path")
+		addr  = flag.String("addr", "wss://cloudlogs.k6.io/api/v1/tail", "loki addres and path")
 		id    = flag.String("id", "1232", "test run id")
 		token = flag.String("token", "1232", "the token")
 		level = flag.String("level", "info", "the info")
