@@ -30,6 +30,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"sort"
 	"strconv"
 	"strings"
 	"syscall"
@@ -77,6 +78,22 @@ type msg struct {
 	} `json:"dropped_entries"`
 }
 
+func getLevelsStr(level string) ([]string, error) {
+	lvl, err := logrus.ParseLevel(level)
+	if err != nil {
+		return nil, fmt.Errorf("unknown log level %s", level) // specifically use a custom error
+	}
+	index := sort.Search(len(logrus.AllLevels), func(i int) bool {
+		return logrus.AllLevels[i] > lvl
+	})
+	result := make([]string, index)
+	for i, lvl := range logrus.AllLevels[:index] {
+		result[i] = lvl.String()
+	}
+
+	return result, nil
+}
+
 func (m *msg) Log(logger logrus.FieldLogger) {
 	var level string
 
@@ -107,7 +124,7 @@ func (m *msg) Log(logger logrus.FieldLogger) {
 				e.Debug(value[1])
 			default:
 				e.Info(value[1])
-				e.Warn("last message had unknonw level " + level)
+				e.Warn("last message had unknown level " + level)
 			}
 		}
 	}
@@ -124,23 +141,11 @@ func (m *msg) Log(logger logrus.FieldLogger) {
 func parseFilters(id, level string) ([]string, error) {
 	idFilter := `test_run_id="` + id + `"`
 
-	levelFilter := `level=~"(`
-
-	switch level {
-	case "debug":
-		levelFilter += "debug|"
-		fallthrough
-	case "info":
-		levelFilter += "info|"
-		fallthrough
-	case "warning":
-		levelFilter += "warning|"
-		fallthrough
-	case "error":
-		levelFilter += "error)\""
-	default:
-		return nil, fmt.Errorf("unknown level %s, possible ones are debug,info,warning,error", level)
+	lvls, err := getLevelsStr(level)
+	if err != nil {
+		return nil, err
 	}
+	levelFilter := `level=~"(` + strings.Join(lvls, "|") + `)"`
 
 	return []string{idFilter, levelFilter}, nil
 }
