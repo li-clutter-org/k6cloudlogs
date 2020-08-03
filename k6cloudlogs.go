@@ -143,6 +143,7 @@ func parseFilters(id, level string) ([]string, error) {
 	return []string{idFilter, levelFilter}, nil
 }
 
+//nolint:funlen
 func main() {
 	var (
 		addr  = flag.String("addr", "wss://cloudlogs.k6.io/api/v1/tail", "loki address and path")
