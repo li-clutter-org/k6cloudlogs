@@ -204,8 +204,10 @@ func main() {
 	if err != nil {
 		log.Fatal("dial:", err)
 	}
-	defer h.Body.Close()
-	defer c.Close()
+	defer func() {
+		_ = h.Body.Close()
+		_ = c.Close()
+	}()
 
 	log.Printf("connected")
 
@@ -217,7 +219,7 @@ func main() {
 			websocket.FormatCloseMessage(websocket.CloseGoingAway, "closing"),
 			time.Now().Add(time.Second))
 
-		c.Close()
+		_ = c.Close()
 	}()
 
 	logger := logrus.New()
