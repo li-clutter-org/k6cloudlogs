@@ -116,10 +116,33 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload Release Asset
+      - name: Upload Linux 64bit
         id: upload-release-asset
-        uses: AButler/upload-release-assets@v2.0
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN}}
-          files: 'dist/*'
-          release-tag: ${{ github.ref }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "dist/${{ env.APP_NAME }}-linux64.tar.gz"
+          asset_name: "${{ env.APP_NAME }}-linux64.tar.gz"
+          asset_content_type: application/gzip
+      - name: Upload Windows 64bit
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "dist/${{ env.APP_NAME }}-win64.zip"
+          asset_name: "${{ env.APP_NAME }}-win64.zip"
+          asset_content_type: application/zip
+      - name: Upload MacOS
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "dist/${{ env.APP_NAME }}-mac.zip"
+          asset_name: "${{ env.APP_NAME }}-mac.zip"
+          asset_content_type: application/zip

@@ -25,7 +25,7 @@ make_archive() {
 
 build_dist() {
 	local ALIAS="$1" FMT="${2}" SUFFIX="${3}"  # Any other arguments are passed to the go build command as env vars
-	local DIR="k6cloudlogs-${VERSION}-${ALIAS}"
+	local DIR="k6cloudlogs-${ALIAS}"
 
 	local BUILD_ENV=("${@:4}")
 	local BUILD_ARGS=(-o "dist/$DIR/k6cloudlogs${SUFFIX}" -trimpath)
@@ -54,7 +54,7 @@ build_dist() {
 }
 
 checksum() {
-	local CHECKSUM_FILE="k6-${VERSION}-checksums.txt"
+	local CHECKSUM_FILE="k6cloudlogs-checksums.txt"
 
 	if command -v sha256sum > /dev/null; then
 		CHECKSUM_CMD=("sha256sum")
@@ -75,9 +75,7 @@ echo "-> Building platform packages..."
 mkdir -p dist
 
 build_dist mac     zip ""   GOOS=darwin  GOARCH=amd64  CGO_ENABLED=0
-build_dist win32   zip .exe GOOS=windows GOARCH=386    CGO_ENABLED=0
 build_dist win64   zip .exe GOOS=windows GOARCH=amd64  CGO_ENABLED=0
-build_dist linux32 tgz ""   GOOS=linux   GOARCH=386    CGO_ENABLED=0
 build_dist linux64 tgz ""   GOOS=linux   GOARCH=amd64  CGO_ENABLED=0
 
 echo "-> Generating checksum file..."
