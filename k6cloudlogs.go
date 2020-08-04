@@ -138,19 +138,24 @@ func parseFilters(id, level string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Is this in LogQL syntax or something of our own (loki-proxy)? It's quite gnarly. :-/
 	levelFilter := `level=~"(` + strings.Join(lvls, "|") + `)"`
 
 	return []string{idFilter, levelFilter}, nil
 }
 
+// I'd rather we split the function instead of silencing the linter, but this is OK for the PoC I guess.
 //nolint:funlen
 func main() {
 	var (
-		addr  = flag.String("addr", "wss://cloudlogs.k6.io/api/v1/tail", "loki address and path")
-		id    = flag.String("id", "1232", "test run id")
-		token = flag.String("token", "1232", "the token")
-		level = flag.String("level", "info", "the info")
+		addr = flag.String("addr", "wss://cloudlogs.k6.io/api/v1/tail", "loki address and path")
+		id   = flag.String("id", "1232", "test run id")
+		// This should be read from an env var, to avoid it appearing in shell history.
+		token = flag.String("token", "1232", "k6 Cloud authentication token")
+		level = flag.String("level", "info", "lowest logging level to return events for (info assumes error, etc.)")
 		start = flag.String("start", "5m", "from how long ago to start tailing")
+		// "... should be in the response"? Though it might sound better to
+		// reword it as "maximum amount of messages in the..."
 		limit = flag.String("limit", "100", "how many messages should be in the ")
 	)
 
@@ -256,15 +261,8 @@ func main() {
 			default:
 			}
 			log.Println("read:", err)
-
 			return
 		}
-		select {
-		case <-ctx.Done():
-			return
-		default:
-		}
-
 		select {
 		case <-ctx.Done():
 			return
