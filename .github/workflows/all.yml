@@ -117,7 +117,7 @@ jobs:
           draft: false
           prerelease: false
       - name: Upload Linux 64bit
-        id: upload-release-asset
+        id: upload-release-asset-linux64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -127,7 +127,7 @@ jobs:
           asset_name: "${{ env.APP_NAME }}-linux64.tar.gz"
           asset_content_type: application/gzip
       - name: Upload Windows 64bit
-        id: upload-release-asset
+        id: upload-release-asset-windows-64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -137,7 +137,7 @@ jobs:
           asset_name: "${{ env.APP_NAME }}-win64.zip"
           asset_content_type: application/zip
       - name: Upload MacOS
-        id: upload-release-asset
+        id: upload-release-asset-macos
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
